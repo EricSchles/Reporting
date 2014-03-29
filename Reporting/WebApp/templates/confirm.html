@@ -1,1 +1,31 @@
-{{ ads }}
+<h2>
+Results For {{website.name}}:</br>
+{{website.url}}
+</h2>
+<table border="1px solid #FFFFFF">
+{% for ad in ads %}
+<tr>
+<td id="{{ad.name}}">
+{{ad.name}}
+</td>
+<td id="{{ad.age}}">
+{{ad.age}}
+</td>
+<td id="{{ad.ethnicity}}">
+{{ad.ethnicity}}
+</td>
+<td id="{{ad.phone_number}}">
+{{ad.phone_number}}
+</td>
+<td id="{{ad.location}}">
+{{ad.location}}
+</td>
+<td id="{{ad.ad}}">
+{{ad.ad}}
+</td>
+<td id="{{ad.date}}">
+{{ad.date}}
+</td>
+</tr>
+{% endfor %}
+</table>

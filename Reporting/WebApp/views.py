@@ -14,23 +14,25 @@ def handle_uploaded_file(f, w):
   skipped = False
   results = []
   for row in csv.reader(f, delimiter=','):
+    #json = "{\"data\": ["
     #Skip the header
     #TODO: Be cleaner/smarter
-    if not skipped:
-      print("Skipping")
-      skipped = True
-    else:
-      print(row)
-      #a = Ad(row, w.name)
-      a = Ad(name=row[0],
-        age=row[1],
-        ethnicity=row[2],
-        phone_number=row[3],
-        location=row[4],
-        ad=row[5],
-        date=row[6],
-        website=w)
-      results.append(a)
+    #if not skipped:
+     # print("Skipping")
+     # skipped = True
+    #else:
+    print(row)
+    #a = Ad(row, w.name)
+    a = Ad(name=row[0],
+      age=row[1],
+      ethnicity=row[2],
+      phone_number=row[3],
+      location=row[4],
+      ad=row[5],
+      date=row[6],
+      website=w)
+    #json += "\"name\": " + name + ", 
+    results.append(a)
   return results
 
 def upload(request):
@@ -47,7 +49,7 @@ def upload(request):
       results = handle_uploaded_file(f, w)
       #request.ads = results
       print(results)
-      return render_to_response('confirm.html', {'ads': results})
+      return render_to_response('confirm.html', {'ads': results, "website": w})
   else:
     form = UploadFileForm()
   return render_to_response('upload.html', {'form': form})
