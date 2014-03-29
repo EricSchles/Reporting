@@ -5,4 +5,5 @@ from WebApp import views
 urlpatterns = patterns('',
   url(r'^$', views.upload, name='upload'),
   url(r'^confirm/$', views.confirm, name='confirm'),
+  url(r'^submit/$', views.success, name='Success'),
 )

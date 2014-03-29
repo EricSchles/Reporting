@@ -2,6 +2,18 @@
 Results For {{website.name}}:</br>
 {{website.url}}
 </h2>
+
+<button type="button">
+Go Back
+</button>
+<form action="/upload/submit/" method="POST">
+<input type="submit" value="Confirm"/>
+<input type="hidden" name="ads" value="{{serialized_ads}}">
+<input type="hidden" name="website_name" value="{{website.name}}">
+<input type="hidden" name="website_url" value="{{website.url}}">
+
+</form>
+
 <table border="1px solid #FFFFFF">
 {% for ad in ads %}
 <tr>
@@ -29,3 +41,7 @@ Results For {{website.name}}:</br>
 </tr>
 {% endfor %}
 </table>
+
+<button type="button">
+Go Back
+</button>
