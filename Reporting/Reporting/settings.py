@@ -43,7 +43,10 @@ INSTALLED_APPS = (
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    #NOTE: REMOVED CURRENTLY TO ALLOW US TO (HACKILY) UPLOAD CSV FILES
+    #FIX ME PROPERLY LATER
+    #See https://docs.djangoproject.com/en/dev/topics/http/middleware/
+    #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
