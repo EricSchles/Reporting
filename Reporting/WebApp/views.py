@@ -1,3 +1,4 @@
+import csv
 from django.shortcuts import render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
 from django import forms
@@ -8,17 +9,27 @@ class UploadFileForm(forms.Form):
   file = forms.FileField()
   
 def handle_uploaded_file(f, w):
+  print("in huf")
   skipped = False
   results = []
-  for chunk in f.chunks():
+  for row in csv.reader(f, delimiter=','):
     #Skip the header
     #TODO: Be cleaner/smarter
     if not skipped:
+      print("Skipping")
       skipped = True
-      continue
-    s = chunk.split(',')
-    a = Ad(s[0].strip(), s[1].strip(), s[2].strip(), s[3].strip(), s[4].strip(), s[5].strip(), s[6].strip(), w)
-    results.push(a)
+    else:
+      print(row)
+      #a = Ad(row, w.name)
+      a = Ad(name=row[0],
+        age=row[1],
+        ethnicity=row[2],
+        phone_number=row[3],
+        location=row[4],
+        ad=row[5],
+        date=row[6],
+        website=w)
+      results.append(a)
   return results
 
 def upload(request):
@@ -33,14 +44,16 @@ def upload(request):
         w = Website(name=f.name)
         w.save()
       results = handle_uploaded_file(f, w)
-      return HttpResponseRedirect('/upload/confirm/', {'ads': results})
+      #request.ads = results
+      print(results)
+      #return HttpResponse(results)
+      return HttpResponseRedirect('/upload/confirm/')
   else:
     form = UploadFileForm()
   return render_to_response('upload.html', {'form': form})
   
 def confirm(request):
-  print(request)
-  return render_to_response('confirm.html')
+  return render_to_response('confirm.html', {'ads' : request})
   
   
   
