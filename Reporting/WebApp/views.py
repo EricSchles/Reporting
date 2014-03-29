@@ -84,24 +84,24 @@ def success(request):
         date=ad['fields']['date'],
         website=website)
     a.save()
-  return HttpResponse("Hello")
+  return HttpResponse("Success! <a href=\"/upload/\">Add More</a> <a href=\"/\">Home</a>")
   #return render_to_response('submitted.html', {'data' : data, "website" : ws})
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
+# Show list of websites
+def websites(request):
+  websites = Website.objects.all()
+  return render_to_response("websites.html", {'websites': websites})
+
+# Show ads for a website
+def website_ads(request, website_id):
+  try:
+    website = Website.objects.get(id=website_id)
+  except Website.DoesNotExist:
+    return HttpResponse("Website does not exist.")
+
+  try:
+    ads = Ad.objects.filter(website=website)
+  except Ad.DoesNotExist:
+    return HttpResponse("There are no ads for the website: Name: {0} URL: {1}.".format(website.name, website.url))
+
+  return render_to_response("website_ads.html", {'ads': ads, 'website': website})
