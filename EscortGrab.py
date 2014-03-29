@@ -70,7 +70,7 @@ def contents_grab(links, tag_list, attr_list, attr_name_list,
 
 def extractWithPattern(contents, listOfArguments):
     if len(listOfArguments) != 1:
-        return "SHOULDNT HAPPEN NO MATCH"
+        raise Exception
     contentsList = contents.split("\n")
     regex = listOfArguments[0]
     for line in contentsList:
@@ -79,8 +79,8 @@ def extractWithPattern(contents, listOfArguments):
             target = isMatch.group(0)
             if len(target) > 0:
                 return target
-            else:
-                return "No Match"
+        else:
+            return "No Match"
 
 def main():
     result_filename = "contents.txt"
@@ -97,8 +97,8 @@ def main():
             ["p", "div", "div"],
             ["class", "style", "class"],
             ["metaInfoDisplay", "padding-left:2em;", "postingBody"],
-            [ None, extractWithPattern, None ],
-            [ [], [ locationMatch ], [] ])
+            [ extractWithPattern, extractWithPattern, None ],
+            [ [ ageMatch ], [ locationMatch ], [] ])
 
     print_headers = os.path.exists(result_filename)
 
@@ -107,7 +107,8 @@ def main():
         f.write("Link, Age, Location, Content\n")
 
       for result in content_data:
-        for i in xrange(0, len(result) - 1):
+        for i in xrange(0, len(result)):
+            print(i)
             if i == len(result) - 1:
                 f.write(result[i] + "\n")
             else:
