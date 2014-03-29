@@ -10,6 +10,9 @@ from models import Website, Ad
 
 class UploadFileForm(forms.Form):
   file = forms.FileField()
+
+def index(request):
+  return render_to_response('index.html')
   
 def handle_uploaded_file(f, w):
   print("in huf")
