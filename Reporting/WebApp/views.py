@@ -1,6 +1,7 @@
 import csv
 from django.shortcuts import render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
+from django.core.urlresolvers import reverse
 from django import forms
 from models import Website, Ad
 
@@ -46,14 +47,14 @@ def upload(request):
       results = handle_uploaded_file(f, w)
       #request.ads = results
       print(results)
-      #return HttpResponse(results)
-      return HttpResponseRedirect('/upload/confirm/')
+      return render_to_response('confirm.html', {'ads': results})
   else:
     form = UploadFileForm()
   return render_to_response('upload.html', {'form': form})
   
-def confirm(request):
-  return render_to_response('confirm.html', {'ads' : request})
+def confirm(request, results):
+  return render_to_response('confirm.html', {'ads' : results})
+  
   
   
   
