@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 
-import urllib2
-import lxml.html
+import re, csv, os #, nltk
+import urllib2, lxml.html
 from lxml import etree
 from sys import argv, exit
-import re
-import os
 
 # You need to specify the tag that the link is wrapped in, if no tag exists use
 # body
@@ -74,19 +72,21 @@ def extractWithPattern(contents, listOfArguments):
     contentsList = contents.split("\n")
     regex = listOfArguments[0]
     for line in contentsList:
-        isMatch = regex.match(line.strip())
+        isMatch = regex.match(line)
         if isMatch != None:
             target = isMatch.group(0)
             if len(target) > 0:
                 return target
-        else:
-            return "No Match"
+    return "No Match"
+
+def clean_post_content(contents, listOfArguments):
+    #return nltk.clean_html(contents)
+    return re.sub("</?[\sa-zA-Z0-9=.:/\"]+/?>", " ", re.sub("&#[0-9]+;", " ", contents)).strip(' \t\r\n')
 
 def main():
     result_filename = "contents.txt"
-    locationMatch = re.compile('[a-z A-Z]+(, [a-z A-Z]+)+')
-    ageMatch      = re.compile('Poster\'s age: [0-9]+')
-
+    locationMatch = re.compile('[a-zA-Z][a-zA-Z ]*(, [a-z A-Z]+)*[a-zA-Z]*')
+    ageMatch      = re.compile('[1-3][0-9]')
     if len(argv) != 2:
         print "Missing arg"
         exit(0)
@@ -97,7 +97,7 @@ def main():
             ["p", "div", "div"],
             ["class", "style", "class"],
             ["metaInfoDisplay", "padding-left:2em;", "postingBody"],
-            [ extractWithPattern, extractWithPattern, None ],
+            [ extractWithPattern, extractWithPattern, clean_post_content ],
             [ [ ageMatch ], [ locationMatch ], [] ])
 
     print_headers = os.path.exists(result_filename)
@@ -106,13 +106,9 @@ def main():
       if not print_headers:
         f.write("Link, Age, Location, Content\n")
 
+      writer = csv.writer(f, quoting=csv.QUOTE_MINIMAL)
       for result in content_data:
-        for i in xrange(0, len(result)):
-            print(i)
-            if i == len(result) - 1:
-                f.write(result[i] + "\n")
-            else:
-                f.write(result[i] + ",")
+          writer.writerow(result)
     print("{0} results found".format(len(content_data)))
 
 
