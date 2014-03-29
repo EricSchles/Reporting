@@ -6,17 +6,17 @@ from lxml import etree
 from sys import argv, exit
 import os
 
-#You need to specify the tag that the link is wrapped in, if no tag exists use
-#body
-#You need to specify the class name the link is wrapped in.  If no class name
-#exists, you will need to write a new scrapper
-#You need to specify how the site moves from page to page.  So for backpage,
-#this is done by base_page?page=number
-#So if we are looking for escorts, we move from page to page by doing the
-#following
-#http://newyork.backpage.com/FemaleEscorts/?page=1 <- first page
-#http://newyork.backpage.com/FemaleEscorts/?page=2 <- second page
-#base html is where to start scraping from.
+# You need to specify the tag that the link is wrapped in, if no tag exists use
+# body
+# You need to specify the class name the link is wrapped in. If no class name
+# exists, you will need to write a new scrapper
+# You need to specify how the site moves from page to page. So for backpage,
+# this is done by base_page?page=number
+# So if we are looking for escorts, we move from page to page by doing the
+# following
+# http://newyork.backpage.com/FemaleEscorts/?page=1 <- first page
+# http://newyork.backpage.com/FemaleEscorts/?page=2 <- second page
+# base html is where to start scraping from.
 
 def link_grab(html_base, num_pages, tags, class_name, next_page):
     to_grab = []
@@ -67,7 +67,7 @@ def contents_grab(links, tag_list, attr_list, attr_name_list, post_process_funcs
    return data
 
 #GLOBALS SHOULD PROBABLY BE NOT GLOBALS
-locationMatch =  '[a-z A-Z]+(, [a-z A-Z]+)+'
+locationMatch = '[a-z A-Z]+(, [a-z A-Z]+)+'
 ageMatch      = 'Poster\'s age: [0-9]+'
 
 def extractWithPattern(contents, listOfArguments):
@@ -104,7 +104,7 @@ def main():
             [[],[],[locationMatch]])
 
     print_headers = os.path.exists(result_filename)
-    
+
     with open(result_filename, "a") as f:
       if not print_headers:
         f.write("Link, Location, Age, Content\n")
