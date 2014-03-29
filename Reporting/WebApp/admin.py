@@ -1,5 +1,5 @@
 from django.contrib import admin
-from WebApp.models import Website, Ad
+from WebApp.models import Website, Ad, Url
 
 class WebsiteAdmin(admin.ModelAdmin):
   fields = ['name', 'url']
@@ -12,3 +12,4 @@ class AdInline(admin.TabularInline):
 admin.site.register(Website, WebsiteAdmin)
 #admin.site.register(Ad, AdInline)
 admin.site.register(Ad)
+admin.site.register(Url)
