@@ -4,6 +4,7 @@ import urllib2
 import lxml.html
 from lxml import etree
 from sys import argv, exit
+import re
 import os
 
 # You need to specify the tag that the link is wrapped in, if no tag exists use
@@ -41,8 +42,8 @@ def link_grab(html_base, num_pages, tags, class_name, next_page):
     return listing
 
 
-def contents_grab(links, tag_list, attr_list, attr_name_list, post_process_funcs,
-        post_process_args):
+def contents_grab(links, tag_list, attr_list, attr_name_list,
+        post_process_funcs, post_process_args):
    data = []
 
    for i in xrange(len(post_process_funcs)):
@@ -58,9 +59,8 @@ def contents_grab(links, tag_list, attr_list, attr_name_list, post_process_funcs
       result = [ link ]
       for tag, attr, attr_name, func, func_args in extract_list:
           try:
-            contents = to_lxml.xpath("//" + tag + "[@" + attr + "=\"" + attr_name
-                  + "\"]")[0]
-            #ABOUT TO PUT ARGUMENTS INTO THIS FUNCTION CALL
+            contents = to_lxml.xpath("//" + tag + "[@" + attr + "=\"" +
+                    attr_name + "\"]")[0]
             result.append(func(etree.tostring(contents), func_args))
           except(IndexError):
               pass
@@ -69,25 +69,23 @@ def contents_grab(links, tag_list, attr_list, attr_name_list, post_process_funcs
    return data
 
 def extractWithPattern(contents, listOfArguments):
-  if len(listOfArguments) != 1:
-    return "SHOULDNT HAPPEN NO MATCH"
-  contentsList = contents.split("\n")
-  regex = listOfArguments[1]
-  rePattern = re.compile(regex)
-  for line in contentsList:
-    isMatch = rePattern.match(line.strip())
-    if isMatch != None:
-      target = isMatch.group(0)
-      if len(target) > 0:
-        return target
-      else:
-        return "No Match"
-
+    if len(listOfArguments) != 1:
+        return "SHOULDNT HAPPEN NO MATCH"
+    contentsList = contents.split("\n")
+    regex = listOfArguments[0]
+    for line in contentsList:
+        isMatch = regex.match(line.strip())
+        if isMatch != None:
+            target = isMatch.group(0)
+            if len(target) > 0:
+                return target
+            else:
+                return "No Match"
 
 def main():
     result_filename = "contents.txt"
-    locationMatch = '[a-z A-Z]+(, [a-z A-Z]+)+'
-    ageMatch      = 'Poster\'s age: [0-9]+'
+    locationMatch = re.compile('[a-z A-Z]+(, [a-z A-Z]+)+')
+    ageMatch      = re.compile('Poster\'s age: [0-9]+')
 
     if len(argv) != 2:
         print "Missing arg"
