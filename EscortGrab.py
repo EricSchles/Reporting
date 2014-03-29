@@ -35,7 +35,7 @@ def link_grab(num_pages,tags,class_name,next_page,html_base):
         
     return listing
         
-def information_grab(tag,class_name,links):
+def contents_grab(tag,class_name,links):
    content = []
    urls = open("urls.txt","r")
    
