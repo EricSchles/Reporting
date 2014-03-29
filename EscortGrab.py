@@ -41,7 +41,7 @@ def link_grab(html_base, num_pages, tags, class_name, next_page):
     return listing
 
 
-def contents_grab(links, tag_list, attr_list, attr_name_list, post_process_funcs):
+def contents_grab(links, tag_list, attr_list, attr_name_list, post_process_funcs, post_process_args):
    data = []
 
    for i in xrange(len(post_process_funcs)):
@@ -58,6 +58,7 @@ def contents_grab(links, tag_list, attr_list, attr_name_list, post_process_funcs
           try:
             contents = to_lxml.xpath("//" + tag + "[@" + attr + "=\"" + attr_name
                   + "\"]")[0]
+            #ABOUT TO PUT ARGUMENTS INTO THIS FUNCTION CALL
             result.append(func(etree.tostring(contents)))
           except(e):
               pass
@@ -69,7 +70,11 @@ def contents_grab(links, tag_list, attr_list, attr_name_list, post_process_funcs
 locationMatch =  '[a-z A-Z]+(, [a-z A-Z]+)+'
 ageMatch      = 'Poster\'s age: [0-9]+'
 
-def extractWithPattern(contents, regex):
+def extractWithPattern(contents, listOfArguments):
+  if len(listOfArguments) != 1:
+    return "SHOULDNT HAPPEN NO MATCH"
+  contentsList = contents.split("\n")
+  regex = listOfArguments[1]
   rePattern = re.compile(regex)
   for line in contentsList:
     isMatch = rePattern.match(line.strip())
@@ -95,7 +100,8 @@ def main():
             ["class", "style", "class"],
             ["metaInfoDisplay", "padding-left:2em;", "postingBody"],
             #[ post_process_location, post_process_age, post_process_body ])
-            [ None, None, None ])
+            [ None, None, extractWithPattern ],
+            [[],[],[locationMatch]])
 
     print_headers = os.path.exists(result_filename)
     
