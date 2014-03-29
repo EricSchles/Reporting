@@ -3,7 +3,7 @@
 import urllib2
 import lxml.html
 from lxml import etree
-from sys import argv
+from sys import argv, exit
 
 #You need to specify the tag that the link is wrapped in, if no tag exists use
 #body
@@ -34,19 +34,19 @@ def link_grab(num_pages, tags, class_name, next_page, html_base):
         to_text = url.read()
         to_lxml = lxml.html.fromstring(to_text)
         links = to_lxml.xpath('//' + tags + "[@class=\"" + class_name + "\"]/a")
-        print(links)
         for i in links:
             listing.append(str(i.attrib['href']))
 
     return listing
 
-def contents_grab(tag, class_name, links):
+def contents_grab(tag, attr, attr_name, links):
    content = []
 
    for i in links:
-      to_text = urllib2.urlopen(str(i.strip("\n"))).read()
+      html = str(i)
+      to_text = urllib2.urlopen(html).read()
       to_lxml = lxml.html.fromstring(to_text)
-      contents = to_lxml.xpath("//" + tag + "[@class='" + class_name + "']")
+      contents = to_lxml.xpath("//" + tag + "[@" + attr + "=\"" + attr_name + "\"]")
       contents = etree.tostring(contents[0])
       content.append([html, contents])
 
@@ -61,7 +61,8 @@ def main():
         exit(0)
     links = link_grab(int(argv[1]), "div", "cat", "?page=",
             "http://newyork.backpage.com/FemaleEscorts/")
-    contents_grab("div", "postingBody", links)
+    #contents_grab("div", "postingBody", links)
+    contents_grab("div", "style", "padding-left:2em;", links)
 
 if __name__ == "__main__":
     main()
