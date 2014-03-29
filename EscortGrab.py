@@ -42,7 +42,7 @@ def link_grab(html_base, num_pages, tags, class_name, next_page):
 
 
 def contents_grab(links, tag_list, attr_list, attr_name_list, post_process_funcs):
-   content = []
+   data = []
 
    for i in xrange(len(post_process_funcs)):
        if post_process_funcs[i] == None:
@@ -55,13 +55,15 @@ def contents_grab(links, tag_list, attr_list, attr_name_list, post_process_funcs
       to_lxml = lxml.html.fromstring(urllib2.urlopen(link).read())
       result = [ link ]
       for tag, attr, attr_name, func in extract_list:
-          contents = to_lxml.xpath("//" + tag + "[@" + attr + "=\"" + attr_name
+          try:
+            contents = to_lxml.xpath("//" + tag + "[@" + attr + "=\"" + attr_name
                   + "\"]")[0]
-          result.append(func(etree.tostring(contents)))
-      content.append(result)
-      print(type(content))
+            result.append(func(etree.tostring(contents)))
+          except(e):
+              pass
+      data.append(result)
 
-   return contents
+   return data
 
 
 def main():
@@ -83,16 +85,16 @@ def main():
     print_headers = os.path.exists(result_filename)
     
     with open(result_filename, "a") as f:
-      if print_headers:
+      if not print_headers:
         f.write("Link, Location, Age, Content\n")
 
       for result in content_data:
         for i in xrange(0, len(result) - 1):
-            print(type(result[i]))
             if i == len(result) - 1:
                 f.write(result[i] + "\n")
             else:
                 f.write(result[i] + ",")
+    print("{0} results found".format(len(content_data)))
 
 
 if __name__ == "__main__":
