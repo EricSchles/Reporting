@@ -6,7 +6,7 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django import forms
-from models import Website, Ad
+from models import Website, Ad, Url
 
 class UploadFileForm(forms.Form):
   file = forms.FileField()
@@ -111,4 +111,13 @@ def report_url(request):
       newUrl.save()
     except Exception:
       return HttpResponse("ERROR")
-    return HttpResponse("Success!")
+    return HttpResponse("SUCCESS")
+
+# Show list of reported URLs
+def urls(request):
+  try:
+    urls = Url.objects.all()
+  except Exception:
+    return HttpResponse("No reported URLS")
+  print(urls)
+  return render_to_response("urls.html", {'urls':urls})

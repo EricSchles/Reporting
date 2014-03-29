@@ -3,7 +3,6 @@ Choose which website to see the ads for
 </h2>
 
 <table border="1px solid #FFFFFF">
-{% for ws in websites %}
 <tr>
 <td>
   Name
@@ -14,6 +13,7 @@ Choose which website to see the ads for
 <td>
 </td>
 </tr>
+{% for ws in websites %}
 <tr>
 <td>
 {{ws.name}}
