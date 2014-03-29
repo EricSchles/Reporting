@@ -65,6 +65,21 @@ def contents_grab(links, tag_list, attr_list, attr_name_list, post_process_funcs
 
    return data
 
+#GLOBALS SHOULD PROBABLY BE NOT GLOBALS
+locationMatch =  '[a-z A-Z]+(, [a-z A-Z]+)+'
+ageMatch      = 'Poster\'s age: [0-9]+'
+
+def extractWithPattern(contents, regex):
+  rePattern = re.compile(regex)
+  for line in contentsList:
+    isMatch = rePattern.match(line.strip())
+    if isMatch != None:
+      target = isMatch.group(0)
+      if len(target) > 0:
+        return target
+      else:
+        return "No Match"
+
 
 def main():
     result_filename = "contents.txt"
