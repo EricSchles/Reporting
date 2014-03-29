@@ -101,3 +101,14 @@ def website_ads(request, website_id):
     return HttpResponse("There are no ads for the website: Name: {0} URL: {1}.".format(website.name, website.url))
 
   return render_to_response("website_ads.html", {'ads': ads, 'website': website})
+
+# Report a URL
+def report_url(request):
+  if request.method == 'POST':
+    url = request.POST['url']
+    try:
+      newUrl = Url(url=url)
+      newUrl.save()
+    except Exception:
+      return HttpResponse("ERROR")
+    return HttpResponse("Success!")

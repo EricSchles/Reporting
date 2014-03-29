@@ -20,3 +20,7 @@ class Ad(models.Model):
 
     def __str__(self):
         return self.name
+
+class Url(models.Model):
+    url = models.CharField(max_length=512)
+    date = models.DateField(auto_now=True)
