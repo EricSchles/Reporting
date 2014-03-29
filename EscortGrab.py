@@ -41,34 +41,32 @@ def link_grab(html_base, num_pages, tags, class_name, next_page):
     return listing
 
 
-def contents_grab(links, tag_list, attr_list, attr_name_list, post_process_funcs, post_process_args):
+def contents_grab(links, tag_list, attr_list, attr_name_list, post_process_funcs,
+        post_process_args):
    data = []
 
    for i in xrange(len(post_process_funcs)):
        if post_process_funcs[i] == None:
-           post_process_funcs[i] = lambda x: x
+           post_process_funcs[i] = lambda x, arglist: x
 
-   extract_list = zip(tag_list, attr_list, attr_name_list, post_process_funcs)
+   extract_list = zip(tag_list, attr_list, attr_name_list, post_process_funcs,
+           post_process_args)
 
    for link in links:
       link = str(link)
       to_lxml = lxml.html.fromstring(urllib2.urlopen(link).read())
       result = [ link ]
-      for tag, attr, attr_name, func in extract_list:
+      for tag, attr, attr_name, func, func_args in extract_list:
           try:
             contents = to_lxml.xpath("//" + tag + "[@" + attr + "=\"" + attr_name
                   + "\"]")[0]
             #ABOUT TO PUT ARGUMENTS INTO THIS FUNCTION CALL
-            result.append(func(etree.tostring(contents)))
-          except(e):
+            result.append(func(etree.tostring(contents), func_args))
+          except(IndexError):
               pass
       data.append(result)
 
    return data
-
-#GLOBALS SHOULD PROBABLY BE NOT GLOBALS
-locationMatch = '[a-z A-Z]+(, [a-z A-Z]+)+'
-ageMatch      = 'Poster\'s age: [0-9]+'
 
 def extractWithPattern(contents, listOfArguments):
   if len(listOfArguments) != 1:
@@ -88,6 +86,8 @@ def extractWithPattern(contents, listOfArguments):
 
 def main():
     result_filename = "contents.txt"
+    locationMatch = '[a-z A-Z]+(, [a-z A-Z]+)+'
+    ageMatch      = 'Poster\'s age: [0-9]+'
 
     if len(argv) != 2:
         print "Missing arg"
@@ -99,15 +99,14 @@ def main():
             ["p", "div", "div"],
             ["class", "style", "class"],
             ["metaInfoDisplay", "padding-left:2em;", "postingBody"],
-            #[ post_process_location, post_process_age, post_process_body ])
-            [ None, None, extractWithPattern ],
-            [[],[],[locationMatch]])
+            [ None, extractWithPattern, None ],
+            [ [], [ locationMatch ], [] ])
 
     print_headers = os.path.exists(result_filename)
 
     with open(result_filename, "a") as f:
       if not print_headers:
-        f.write("Link, Location, Age, Content\n")
+        f.write("Link, Age, Location, Content\n")
 
       for result in content_data:
         for i in xrange(0, len(result) - 1):
