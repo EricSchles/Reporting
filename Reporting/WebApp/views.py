@@ -9,8 +9,8 @@ from django import forms
 from models import Website, Ad
 
 class UploadFileForm(forms.Form):
-  name = forms.CharField(max_length=50)
-  url = forms.CharField(max_length=255)
+  #name = forms.CharField(max_length=50)
+  #url = forms.CharField(max_length=255)
   file = forms.FileField()
   
 def handle_uploaded_file(f, w):
@@ -39,18 +39,22 @@ def upload(request):
     if form.is_valid():
       f = request.FILES['file']
       website = None
-      tmpname = request.POST['name']
-      tmpurl = request.POST['url']
+      #tmpname = request.POST['website']
+      tmpurl = request.POST['website']
+      tmpname = ""
+      if tmpurl == "NEWSITE":
+        tmpurl = request.POST['newSiteUrl']
+        tmpname = request.POST['newSiteName']
       try:
         website = Website.objects.get(url=tmpurl)
       except Website.DoesNotExist:
         website = Website(name=tmpname, url=tmpurl)
       results = handle_uploaded_file(f, website)
       return render_to_response('confirm.html', {'ads': results, "website": website, "serialized_ads": serializers.serialize("json", results)})
-      #return render_to_response('confirm.html', {'ads': results, "website": website, "serialized_ads": json.dumps(results)})
   else:
     form = UploadFileForm()
-  return render_to_response('upload.html', {'form': form})
+  websites = [Website(name="site1", url="site1.com"), Website(name="site2", url="site2.org"), Website(name="site3", url="site3.edu")]
+  return render_to_response('upload.html', {'form': form, 'websites': websites})
   
 def confirm(request, results):
   return render_to_response('confirm.html', {'ads' : results})
@@ -64,17 +68,8 @@ def success(request):
   except Website.DoesNotExist:
     website = Website(name=tmpname, url=tmpurl)
     website.save()
-  #print(request.POST['ads'])
-  #Deserialize the data, then pass 
-  #deserializedData = serializers.deserialize("json", request.POST['ads'])
-  #print(deserializedData)
   data = json.loads(request.POST['ads'])
-  #print(data)
-  print("+++++++++++++++++++++++++++++++++++++++++++++++++=")
   for ad in data:
-    print(ad)
-    print(ad['fields'])
-    print("\n")
     a = Ad(name=ad['fields']['name'],
         age=ad['fields']['age'],
         ethnicity=ad['fields']['ethnicity'],
@@ -85,7 +80,6 @@ def success(request):
         website=website)
     a.save()
   return HttpResponse("Hello")
-  #return render_to_response('submitted.html', {'data' : data, "website" : ws})
   
   
   

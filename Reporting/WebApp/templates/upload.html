@@ -1,4 +1,13 @@
 <form enctype="multipart/form-data" method="post" action="/upload/"> {% csrf_token %}
 {{ form }}
+</br>
+{% for website in websites %}
+<input type="radio" name="website" value="{{website.url}}">{{website.name}} ({{website.url}})</br>
+{% endfor %}
+<input type="radio" name="website" value="NEWSITE">Other
+
+<input type="text" name="newSiteName" placeholder="Site Name"/>
+<input type="text" name="newSiteUrl" placeholder="Site URL"/>
+</br>
 <input type="submit" value="Submit" />
 </form>
