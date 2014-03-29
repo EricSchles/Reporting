@@ -4,6 +4,7 @@ import urllib2
 import lxml.html
 from lxml import etree
 from sys import argv, exit
+import os
 
 #You need to specify the tag that the link is wrapped in, if no tag exists use
 #body
@@ -17,7 +18,7 @@ from sys import argv, exit
 #http://newyork.backpage.com/FemaleEscorts/?page=2 <- second page
 #base html is where to start scraping from.
 
-def link_grab(num_pages, tags, class_name, next_page, html_base):
+def link_grab(html_base, num_pages, tags, class_name, next_page):
     to_grab = []
     pages = []
     listing = []
@@ -39,30 +40,60 @@ def link_grab(num_pages, tags, class_name, next_page, html_base):
 
     return listing
 
-def contents_grab(tag, attr, attr_name, links):
+
+def contents_grab(links, tag_list, attr_list, attr_name_list, post_process_funcs):
    content = []
 
-   for i in links:
-      html = str(i)
-      to_text = urllib2.urlopen(html).read()
-      to_lxml = lxml.html.fromstring(to_text)
-      contents = to_lxml.xpath("//" + tag + "[@" + attr + "=\"" + attr_name + "\"]")
-      contents = etree.tostring(contents[0])
-      content.append([html, contents])
+   for i in xrange(len(post_process_funcs)):
+       if post_process_funcs[i] == None:
+           post_process_funcs[i] = lambda x: x
 
-   with open("contents.txt", "a") as f:
-      for i in content:
-         f.write(i[0]+"\n")
-         f.write(i[1]+"\n")
+   extract_list = zip(tag_list, attr_list, attr_name_list, post_process_funcs)
+
+   for link in links:
+      link = str(link)
+      to_lxml = lxml.html.fromstring(urllib2.urlopen(link).read())
+      result = [ link ]
+      for tag, attr, attr_name, func in extract_list:
+          contents = to_lxml.xpath("//" + tag + "[@" + attr + "=\"" + attr_name
+                  + "\"]")[0]
+          result.append(func(etree.tostring(contents)))
+      content.append(result)
+      print(type(content))
+
+   return contents
+
 
 def main():
+    result_filename = "contents.txt"
+
     if len(argv) != 2:
         print "Missing arg"
         exit(0)
-    links = link_grab(int(argv[1]), "div", "cat", "?page=",
-            "http://newyork.backpage.com/FemaleEscorts/")
-    #contents_grab("div", "postingBody", links)
-    contents_grab("div", "style", "padding-left:2em;", links)
+
+    links = link_grab("http://newyork.backpage.com/FemaleEscorts/",
+            int(argv[1]), "div", "cat", "?page=")
+    content_data = contents_grab(links,
+            ["p", "div", "div"],
+            ["class", "style", "class"],
+            ["metaInfoDisplay", "padding-left:2em;", "postingBody"],
+            #[ post_process_location, post_process_age, post_process_body ])
+            [ None, None, None ])
+
+    print_headers = os.path.exists(result_filename)
+    
+    with open(result_filename, "a") as f:
+      if print_headers:
+        f.write("Link, Location, Age, Content\n")
+
+      for result in content_data:
+        for i in xrange(0, len(result) - 1):
+            print(type(result[i]))
+            if i == len(result) - 1:
+                f.write(result[i] + "\n")
+            else:
+                f.write(result[i] + ",")
+
 
 if __name__ == "__main__":
     main()
