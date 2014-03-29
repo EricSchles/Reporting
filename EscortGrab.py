@@ -72,7 +72,7 @@ def extractWithPattern(contents, listOfArguments):
     contentsList = contents.split("\n")
     regex = listOfArguments[0]
     for line in contentsList:
-        isMatch = regex.match(line)
+        isMatch = regex.search(line)
         if isMatch != None:
             target = isMatch.group(0)
             if len(target) > 0:
@@ -83,9 +83,12 @@ def clean_post_content(contents, listOfArguments):
     #return nltk.clean_html(contents)
     return re.sub("</?[\sa-zA-Z0-9=.:/\"]+/?>", " ", re.sub("&#[0-9]+;", " ", contents)).strip(' \t\r\n')
 
+def extract_location(contents, listOfArguments):
+    return re.sub("&#[0-9]+;", "", contents.split("\n")[3].strip(" \t\r\n"))
+
 def main():
     result_filename = "contents.txt"
-    locationMatch = re.compile('[a-zA-Z][a-zA-Z ]*(, [a-z A-Z]+)*[a-zA-Z]*')
+#    locationMatch = re.compile('[a-zA-Z][a-zA-Z\s]*(,\s*[a-z\sA-Z]+)*[a-zA-Z]*')
     ageMatch      = re.compile('[1-3][0-9]')
     if len(argv) != 2:
         print "Missing arg"
@@ -97,8 +100,8 @@ def main():
             ["p", "div", "div"],
             ["class", "style", "class"],
             ["metaInfoDisplay", "padding-left:2em;", "postingBody"],
-            [ extractWithPattern, extractWithPattern, clean_post_content ],
-            [ [ ageMatch ], [ locationMatch ], [] ])
+            [ extractWithPattern, extract_location, clean_post_content ],
+            [ [ ageMatch ], None, None ])
 
     print_headers = os.path.exists(result_filename)
 
