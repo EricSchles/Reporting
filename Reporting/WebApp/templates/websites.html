@@ -1,0 +1,29 @@
+<h2>
+Choose which website to see the ads for
+</h2>
+
+<table border="1px solid #FFFFFF">
+<tr>
+<td>
+  Name
+</td>
+<td>
+  URL
+</td>
+<td>
+</td>
+</tr>
+{% for ws in websites %}
+<tr>
+<td>
+{{ws.name}}
+</td>
+<td>
+{{ws.url}}
+</td>
+<td>
+<a href="/websites/{{ws.id}}/">VIEW</a>
+</td>
+</tr>
+{% endfor %}
+</table>

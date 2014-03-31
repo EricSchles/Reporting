@@ -1,0 +1,24 @@
+<h2>
+List of reported URLs
+</h2>
+
+<table border="1px solid #FFFFFF">
+<tr>
+<td>
+  URL
+</td>
+<td>
+  DATE
+</td>
+</tr>
+{% for url in urls %}
+<tr>
+<td>
+<a href="{{url.url}}">{{url.url}}</a>
+</td>
+<td>
+{{url.date}}
+</td>
+</tr>
+{% endfor %}
+</table>
